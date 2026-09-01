@@ -84,11 +84,18 @@ other way round.
 - **Fingertip sizing first**: controls are 40–48px by default and tighten at
   `sm:`. Small marks (checkboxes, switches) get a 44px hit area from the `.tap`
   utility without changing how they look.
-- **App-shell layout.** The root is exactly one viewport tall and never
-  scrolls; the top bar and tab bar are flex children and only `<main>` scrolls.
-  Nothing is `position: fixed`, because on iOS a fixed bar drifts during
-  rubber-band scrolling and jumps when the keyboard opens. The tab bar is
-  structurally pinned instead.
+- **App-shell layout.** The root is pinned with `fixed inset-0` — *not* sized in
+  `dvh`, which iOS standalone can report short of the real screen and leave a
+  dead strip under the tab bar. The top bar and tab bar are flex children of
+  that root and only `<main>` scrolls, so the bars are pinned structurally
+  rather than by `position: fixed`, which drifts during iOS rubber-banding and
+  jumps when the keyboard opens.
+- **No zoom.** The viewport is locked (`maximum-scale=1, user-scalable=no`),
+  with `text-size-adjust: 100%` and `touch-action: manipulation` so iOS neither
+  rescales type on rotation nor waits for a double-tap.
+- **Date and time inputs** are forced to obey their box: Safari sizes them from
+  their *value*, so a `w-full` one still overflows its container on iOS until
+  you give it `appearance: none; min-width: 0; max-width: 100%`.
 - **Safe areas**: each bar carries its own inset padding, so the *background*
   bleeds under the notch and home indicator while the *content* stays clear.
   Horizontal insets are handled too, for a notch in landscape. Top-anchored
