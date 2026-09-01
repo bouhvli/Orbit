@@ -36,6 +36,13 @@ function useTheme() {
       document
         .querySelector('meta[name="theme-color"]')
         ?.setAttribute('content', dark ? '#121116' : '#f7f4ee')
+      // Mirrored for the inline head script, so the next load paints — and
+      // tints Safari's chrome — correctly before any JS of ours runs.
+      try {
+        localStorage.setItem('orbit:resolved-theme', dark ? 'dark' : 'light')
+      } catch {
+        /* storage unavailable; only costs a flash */
+      }
     }
     apply()
     media.addEventListener('change', apply)

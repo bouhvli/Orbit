@@ -386,14 +386,14 @@ export function AppShell() {
 
   return (
     /*
-     * App-shell layout: the root is pinned to the viewport with `fixed inset-0`
-     * rather than measured in `dvh`, which iOS standalone can report short of the
-     * real screen — that is what left a dead strip under the tab bar.
+     * App-shell layout: the root is pinned and sized from the measured
+     * `--app-height`, because iOS standalone can report a viewport shorter than
+     * the real screen — that is what left a dead strip under the tab bar.
      * The bars are flex children, so they are structurally pinned; only <main>
      * scrolls. Safe-area insets pad each bar, so their backgrounds still bleed
      * under the notch and home indicator while their content stays clear.
      */
-    <div className="fixed inset-0 flex overflow-hidden bg-canvas">
+    <div className="app-shell flex overflow-hidden bg-canvas">
       <aside
         className={cn(
           'hidden h-full w-[232px] shrink-0 overflow-y-auto border-r border-line bg-canvas-tint scroll-quiet lg:block',

@@ -3,7 +3,10 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { dbReady } from './db/db'
+import { trackViewportHeight } from './lib/viewport'
 import './index.css'
+
+trackViewportHeight()
 
 const root = createRoot(document.getElementById('root')!)
 

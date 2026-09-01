@@ -85,6 +85,10 @@ export default defineConfig(({ mode }) => {
       },
     }),
     ],
-    server: { port: 5173, open: false },
+    //host: true,
+    //so a phone on the same network can load it — a PWA can only be
+    // tested properly on the device.
+    server: { port: 5173, open: false, host: true },
+    preview: { port: 4173, host: true },
   }
 })

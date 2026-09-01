@@ -8,9 +8,28 @@
     />
     <meta name="description" content="Orbit — your personal work command center. Works offline." />
 
-    <!-- kept as a single tag: the app sets it from the resolved theme, which can
-         differ from the OS preference -->
+    <!-- Safari tints its toolbars from this, and reads it before the app boots,
+         so the inline script below fixes it up front. A single tag (not
+         media-scoped) because the in-app theme can differ from the OS. -->
     <meta name="theme-color" content="#f7f4ee" />
+    <script>
+      // Resolve the theme before first paint: stops Safari tinting its chrome
+      // light behind a dark app, and removes the flash of the wrong theme.
+      ;(function () {
+        try {
+          var saved = localStorage.getItem('orbit:resolved-theme')
+          var dark = saved
+            ? saved === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+          document.documentElement.classList.toggle('dark', dark)
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute('content', dark ? '#121116' : '#f7f4ee')
+        } catch (e) {
+          /* private mode, or no storage — the app corrects itself on boot */
+        }
+      })()
+    </script>
 
     <!-- installed-app behaviour -->
     <meta name="mobile-web-app-capable" content="yes" />

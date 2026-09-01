@@ -96,7 +96,12 @@ other way round.
 - **Date and time inputs** are forced to obey their box: Safari sizes them from
   their *value*, so a `w-full` one still overflows its container on iOS until
   you give it `appearance: none; min-width: 0; max-width: 100%`.
-- **Safe areas**: each bar carries its own inset padding, so the *background*
+- **Safe areas are measured, not assumed.** iOS reports the device's
+  `env(safe-area-inset-*)` values *even when it has already shrunk the viewport
+  to avoid them* — padding by `env()` alone then counts the notch twice. So
+  `lib/viewport.ts` compares the viewport against the screen and publishes
+  `--safe-top` / `--safe-bottom` with what is genuinely still covered; `env()`
+  remains the pre-JS fallback. Each bar pads by those, so the *background*
   bleeds under the notch and home indicator while the *content* stays clear.
   Horizontal insets are handled too, for a notch in landscape. Top-anchored
   sheets (search, capture) pad for the notch as well. The type scale steps down
