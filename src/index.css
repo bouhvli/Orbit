@@ -1,0 +1,533 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Orbit — visual system
+
+   Typeface: Departure Mono (Helena Zhang, SIL OFL 1.1 — see
+   /public/fonts/DepartureMono-OFL.txt). It is a pixel-grid font, so the whole
+   type scale is built on multiples of 5.5px (11px = one font pixel) and the
+   geometry is kept crisp: 1px hairlines, small radii, hard offset shadows.
+   Colour is warm paper / deep ink, and is reserved for meaning — one accent
+   per project, three states for health.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Departure Mono';
+  src:
+    url('/fonts/DepartureMono-Regular.woff2') format('woff2'),
+    url('/fonts/DepartureMono-Regular.woff') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --c-bg: #f7f4ee;
+  --c-bg-tint: #efeae1;
+  --c-surface: #fffdfa;
+  --c-surface-2: #f1ece3;
+  --c-border: #ddd5c8;
+  --c-border-strong: #c3b8a6;
+  --c-text: #1f1c17;
+  --c-muted: #6a6257;
+  --c-faint: #9b9184;
+
+  --c-good: #3f7d51;
+  --c-good-soft: #e2eddf;
+  --c-warn: #9e6d10;
+  --c-warn-soft: #f6ead0;
+  --c-bad: #a94736;
+  --c-bad-soft: #f6e2dc;
+
+  --accent: #5750e0;
+  --accent-ink: #3d37ab;
+  --accent-soft: #e9e8fd;
+
+  /* long-form reading face — swappable in Settings */
+  --font-read: 'Departure Mono', ui-monospace, monospace;
+
+  color-scheme: light;
+}
+
+.dark {
+  --c-bg: #121116;
+  --c-bg-tint: #17161d;
+  --c-surface: #191820;
+  --c-surface-2: #222129;
+  --c-border: #2e2c37;
+  --c-border-strong: #454250;
+  --c-text: #e9e5dd;
+  --c-muted: #9d968c;
+  --c-faint: #6b655d;
+
+  --c-good: #6ebc82;
+  --c-good-soft: #18271c;
+  --c-warn: #d9a441;
+  --c-warn-soft: #2a2211;
+  --c-bad: #e0705c;
+  --c-bad-soft: #2c1a16;
+
+  --accent: #8b83ff;
+  --accent-ink: #b3adff;
+  --accent-soft: #24213f;
+
+  color-scheme: dark;
+}
+
+/* --- accents -------------------------------------------------------------- */
+/* Saturated enough to feel alive against the warm paper, still dark enough that
+   the paper-coloured checkmark on an accent fill stays legible. */
+.accent-indigo { --accent: #5750e0; --accent-ink: #3d37ab; --accent-soft: #e9e8fd; }
+.accent-teal   { --accent: #0d9c8c; --accent-ink: #0a7469; --accent-soft: #d8f3ef; }
+.accent-amber  { --accent: #c2850a; --accent-ink: #8f6106; --accent-soft: #fbeecd; }
+.accent-rose   { --accent: #d84a6d; --accent-ink: #a63450; --accent-soft: #fce2e9; }
+.accent-violet { --accent: #8b45e3; --accent-ink: #6a2fb2; --accent-soft: #f2e7fd; }
+.accent-sky    { --accent: #1183cd; --accent-ink: #0d639b; --accent-soft: #ddeffc; }
+.accent-lime   { --accent: #6a9e14; --accent-ink: #4f760f; --accent-soft: #ecf6d6; }
+.accent-clay   { --accent: #ba6234; --accent-ink: #8c4926; --accent-soft: #fae7dc; }
+
+.dark .accent-indigo { --accent: #8b83ff; --accent-ink: #b3adff; --accent-soft: #24213f; }
+.dark .accent-teal   { --accent: #2fd3bd; --accent-ink: #6fe4d5; --accent-soft: #0f322e; }
+.dark .accent-amber  { --accent: #f0b32f; --accent-ink: #f8cc6b; --accent-soft: #322612; }
+.dark .accent-rose   { --accent: #fb7d9c; --accent-ink: #ffa2b9; --accent-soft: #351822; }
+.dark .accent-violet { --accent: #b978ff; --accent-ink: #d0a4ff; --accent-soft: #2a163e; }
+.dark .accent-sky    { --accent: #43b4f5; --accent-ink: #7fcbf9; --accent-soft: #0e293c; }
+.dark .accent-lime   { --accent: #a8d63f; --accent-ink: #c2e575; --accent-soft: #1e2a10; }
+.dark .accent-clay   { --accent: #e89660; --accent-ink: #f2b088; --accent-soft: #311d13; }
+
+@theme inline {
+  --color-canvas: var(--c-bg);
+  --color-canvas-tint: var(--c-bg-tint);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-line: var(--c-border);
+  --color-line-strong: var(--c-border-strong);
+  --color-ink: var(--c-text);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--c-good);
+  --color-good-soft: var(--c-good-soft);
+  --color-warn: var(--c-warn);
+  --color-warn-soft: var(--c-warn-soft);
+  --color-bad: var(--c-bad);
+  --color-bad-soft: var(--c-bad-soft);
+
+  --font-sans: 'Departure Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-mono: 'Departure Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-read: var(--font-read);
+
+  /* Pixel grid: 11px = 1 font pixel. Every step is a multiple of 5.5px. */
+  --text-micro: 0.6875rem; /* 11 */
+  --text-micro--line-height: 1.5;
+  --text-body: 1.03125rem; /* 16.5 */
+  --text-body--line-height: 1.5;
+  --text-head: 1.375rem; /* 22 */
+  --text-head--line-height: 1.25;
+  --text-display: 2.0625rem; /* 33 */
+  --text-display--line-height: 1.1;
+  --text-jumbo: 2.75rem; /* 44 */
+  --text-jumbo--line-height: 1;
+
+  --radius-xs: 2px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
+  --radius-card: 5px;
+}
+
+@layer base {
+  * {
+    border-color: var(--c-border);
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    font-size: 16px;
+  }
+
+  /* The whole scale is in rem, so one step down at phone width keeps the
+     pixel-grid proportions while fitting a few more characters per line. */
+  @media (max-width: 480px) {
+    html {
+      font-size: 15px;
+    }
+  }
+
+  body {
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.5;
+    overscroll-behavior-y: none;
+    /* pixel fonts stay sharpest without subpixel smoothing */
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-radius: 2px;
+  }
+
+  input,
+  textarea,
+  button,
+  select {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--c-faint);
+  }
+}
+
+@layer components {
+  .card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-card);
+  }
+
+  /* Uppercase tracked micro-label — the workhorse of the interface */
+  .label-micro {
+    font-size: var(--text-micro);
+    line-height: 1.45;
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+    color: var(--c-faint);
+  }
+
+  .scroll-quiet {
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-border-strong) transparent;
+  }
+  .scroll-quiet::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .scroll-quiet::-webkit-scrollbar-thumb {
+    background: var(--c-border-strong);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 0;
+  }
+  .scroll-quiet::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Rendered markdown — the notes surface */
+  .prose-note {
+    font-family: var(--font-read);
+    color: var(--c-text);
+    line-height: 1.65;
+    font-size: var(--text-body);
+  }
+  .prose-note > * + * {
+    margin-top: 0.9em;
+  }
+  .prose-note h1 {
+    font-size: var(--text-head);
+    line-height: 1.25;
+    margin-top: 1.3em;
+    letter-spacing: -0.01em;
+  }
+  .prose-note h2 {
+    font-size: var(--text-body);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-muted);
+    margin-top: 1.6em;
+  }
+  .prose-note h3 {
+    font-size: var(--text-body);
+    color: var(--accent-ink);
+    margin-top: 1.4em;
+  }
+  .prose-note > :first-child {
+    margin-top: 0;
+  }
+  .prose-note ul,
+  .prose-note ol {
+    padding-left: 1.4em;
+  }
+  .prose-note ul {
+    list-style: none;
+  }
+  .prose-note ul > li {
+    position: relative;
+  }
+  .prose-note ul > li::before {
+    content: '▪';
+    position: absolute;
+    left: -1.25em;
+    color: var(--c-faint);
+  }
+  .prose-note ol {
+    list-style: decimal;
+  }
+  .prose-note li + li {
+    margin-top: 0.3em;
+  }
+  .prose-note li::marker {
+    color: var(--c-faint);
+  }
+  .prose-note a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-note strong {
+    color: var(--accent-ink);
+  }
+  .prose-note em {
+    font-style: italic;
+    color: var(--c-muted);
+  }
+  .prose-note code {
+    font-family: var(--font-mono);
+    background: var(--c-surface-2);
+    border: 1px solid var(--c-border);
+    padding: 0 0.3em;
+    border-radius: 2px;
+  }
+  .prose-note pre {
+    background: var(--c-surface-2);
+    border: 1px solid var(--c-border);
+    border-radius: 3px;
+    padding: 0.75rem 0.9rem;
+    overflow-x: auto;
+    font-size: var(--text-micro);
+    line-height: 1.7;
+  }
+  .prose-note pre code {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+  }
+  .prose-note blockquote {
+    border-left: 2px solid var(--accent);
+    padding-left: 0.9rem;
+    color: var(--c-muted);
+  }
+  .prose-note hr {
+    border: 0;
+    border-top: 1px dashed var(--c-border-strong);
+  }
+  .prose-note table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-micro);
+  }
+  .prose-note th,
+  .prose-note td {
+    border: 1px solid var(--c-border);
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+  }
+  .prose-note th {
+    background: var(--c-surface-2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .prose-note img {
+    max-width: 100%;
+  }
+  .prose-note input[type='checkbox'] {
+    accent-color: var(--accent);
+    margin-right: 0.4em;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Row actions: always visible on touch, revealed on hover with a pointer.
+     A hover-only control is an invisible control on a phone. */
+  .row-actions {
+    opacity: 1;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .row-actions {
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+    .group:hover .row-actions,
+    .row-actions:focus-within {
+      opacity: 1;
+    }
+  }
+
+  /* Grow a small control's hit area to ~44px without changing its look. */
+  .tap {
+    position: relative;
+  }
+  .tap::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .bottom-safe {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tw-bottom-extra, 0px));
+  }
+
+  .track-wide {
+    letter-spacing: 0.11em;
+  }
+
+  /* Hard offset shadow — the pixel-native equivalent of a lift */
+  .lift {
+    transition:
+      transform 120ms steps(2, end),
+      box-shadow 120ms steps(2, end),
+      border-color 140ms ease,
+      background-color 140ms ease;
+  }
+  .lift:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 var(--c-border-strong);
+    border-color: var(--c-border-strong);
+  }
+
+  .shadow-hard {
+    box-shadow: 3px 3px 0 var(--c-border-strong);
+  }
+
+  .strike-soft {
+    text-decoration: line-through;
+    text-decoration-color: var(--c-faint);
+    text-decoration-thickness: 1px;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* dashed rule used to separate list sections */
+  .rule-dashed {
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--c-border) 0 4px,
+      transparent 4px 8px
+    );
+    height: 1px;
+  }
+}
+
+/* --- motion --------------------------------------------------------------- */
+@keyframes orbit-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes orbit-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes orbit-pop {
+  0% {
+    transform: scale(0.7);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes orbit-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes orbit-sheet {
+  from {
+    transform: translateY(14px);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.animate-rise {
+  animation: orbit-rise 200ms steps(4, end) both;
+}
+.animate-sheet {
+  animation: orbit-sheet 190ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+.animate-fade {
+  animation: orbit-fade 140ms ease both;
+}
+.animate-pop {
+  animation: orbit-pop 200ms steps(3, end);
+}
+.caret::after {
+  content: '_';
+  animation: orbit-blink 1.06s steps(1, end) infinite;
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .lift:hover {
+    transform: none;
+  }
+  .caret::after {
+    animation: none;
+  }
+}
