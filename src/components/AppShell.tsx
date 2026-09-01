@@ -69,7 +69,9 @@ function BottomTabs() {
   return (
     <nav
       aria-label="Main"
-      className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-line bg-canvas/95 backdrop-blur lg:hidden"
+      /* A flex child of the shell rather than `fixed`: on iOS a fixed bar drifts
+         during rubber-band scrolling and jumps when the keyboard opens. */
+      className="pb-safe px-safe z-30 shrink-0 border-t border-line bg-canvas lg:hidden"
     >
       <div className="flex items-stretch">
         {TABS.map(({ to, label, icon: Icon, end }) => (
@@ -110,7 +112,9 @@ function CaptureButton() {
       type="button"
       onClick={() => setQuickAdd(true)}
       aria-label="Capture anything"
-      className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+4.5rem)] right-3 z-30 grid h-13 w-13 place-items-center rounded-lg border-2 border-accent bg-canvas/80 text-accent backdrop-blur transition-transform active:translate-y-px lg:hidden"
+      /* Anchored to the scroll area, which already ends where the tab bar
+         begins — no duplicating the bar's height in a magic offset. */
+      className="absolute bottom-4 right-[calc(env(safe-area-inset-right,0px)+0.75rem)] z-30 grid h-13 w-13 place-items-center rounded-lg border-2 border-accent bg-canvas/80 text-accent backdrop-blur transition-transform active:translate-y-px lg:hidden"
     >
       <IconPlus className="h-5 w-5" />
     </button>
@@ -206,18 +210,20 @@ function MobileTopBar() {
 
   return (
     <>
-      <header className="pt-safe sticky top-0 z-30 flex min-h-13 items-center gap-1 border-b border-line bg-canvas/95 px-2 backdrop-blur lg:hidden">
-        <span className="flex items-center gap-2 px-2 text-body uppercase tracking-[0.14em]">
-          <IconOrbit className="h-4 w-4 text-accent" />
-          Orbit
-        </span>
-        <div className="flex-1" />
-        <IconButton label="Search everything" onClick={togglePalette}>
-          <IconSearch className="h-[18px] w-[18px]" />
-        </IconButton>
-        <IconButton label="More" onClick={() => setMore(true)}>
-          <span className="text-body leading-none">⋯</span>
-        </IconButton>
+      <header className="pt-safe px-safe z-30 shrink-0 border-b border-line bg-canvas lg:hidden">
+        <div className="flex min-h-13 items-center gap-1 px-2">
+          <span className="flex items-center gap-2 px-2 text-body uppercase tracking-[0.14em]">
+            <IconOrbit className="h-4 w-4 text-accent" />
+            Orbit
+          </span>
+          <div className="flex-1" />
+          <IconButton label="Search everything" onClick={togglePalette}>
+            <IconSearch className="h-[18px] w-[18px]" />
+          </IconButton>
+          <IconButton label="More" onClick={() => setMore(true)}>
+            <span className="text-body leading-none">⋯</span>
+          </IconButton>
+        </div>
       </header>
       <MoreSheet open={more} onClose={() => setMore(false)} />
     </>
@@ -379,10 +385,16 @@ export function AppShell() {
   const bare = location.pathname === '/focus'
 
   return (
-    <div className="flex min-h-dvh bg-canvas">
+    /*
+     * App-shell layout: the root is exactly one viewport tall and never scrolls.
+     * The bars are flex children, so they are structurally pinned; only <main>
+     * scrolls. Safe-area insets pad each bar, so their backgrounds still bleed
+     * under the notch and home indicator while their content stays clear.
+     */
+    <div className="flex h-dvh overflow-hidden bg-canvas">
       <aside
         className={cn(
-          'sticky top-0 hidden h-dvh w-[232px] shrink-0 border-r border-line bg-canvas-tint lg:block',
+          'hidden h-full w-[232px] shrink-0 overflow-y-auto border-r border-line bg-canvas-tint scroll-quiet lg:block',
           bare && 'lg:hidden',
         )}
       >
@@ -391,23 +403,21 @@ export function AppShell() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         {!bare && <MobileTopBar />}
-        <main
-          className={cn(
-            'min-w-0 flex-1',
-            // room for the tab bar and the capture button
-            !bare && 'pb-[calc(env(safe-area-inset-bottom,0px)+6rem)] lg:pb-0',
-          )}
-        >
-          <Outlet />
-        </main>
+        <div className="relative min-h-0 flex-1">
+          <main
+            data-app-scroll
+            className={cn(
+              'px-safe h-full overflow-y-auto overscroll-contain scroll-quiet',
+              // clearance for the floating capture button
+              !bare && 'pb-20 lg:pb-0',
+            )}
+          >
+            <Outlet />
+          </main>
+          {!bare && <CaptureButton />}
+        </div>
+        {!bare && <BottomTabs />}
       </div>
-
-      {!bare && (
-        <>
-          <CaptureButton />
-          <BottomTabs />
-        </>
-      )}
     </div>
   )
 }

@@ -75,14 +75,15 @@ export function Focus() {
   const seconds = (ms % 60_000) / 1000
 
   return (
+    // Focus has no bars of its own, so the safe-area padding lives on the root
+    // and the visual padding on the inner column — they cannot fight that way.
     <div
       className={cn(
-        'flex min-h-dvh flex-col items-center px-5',
-        'pt-[calc(env(safe-area-inset-top,0px)+1.5rem)]',
-        'pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)]',
+        'pt-safe pb-safe px-safe flex min-h-full flex-col',
         project ? `accent-${project.accent}` : '',
       )}
     >
+      <div className="flex flex-1 flex-col items-center px-5 py-6">
       <header className="flex w-full max-w-2xl items-center justify-between">
         <span className="label-micro">
           {focus.mode === 'break' ? 'Break' : 'Focus'}
@@ -224,18 +225,19 @@ export function Focus() {
         </div>
       </div>
 
-      <footer className="flex w-full max-w-2xl items-center justify-between text-micro text-faint">
-        <span>Notifications are paused while you focus.</span>
-        {task && (
-          <button
-            type="button"
-            onClick={() => focus.setTarget({ taskId: null, projectId: null })}
-            className="hover:text-ink"
-          >
-            Change task
-          </button>
-        )}
-      </footer>
+        <footer className="flex w-full max-w-2xl items-center justify-between text-micro text-faint">
+          <span>Notifications are paused while you focus.</span>
+          {task && (
+            <button
+              type="button"
+              onClick={() => focus.setTarget({ taskId: null, projectId: null })}
+              className="hover:text-ink"
+            >
+              Change task
+            </button>
+          )}
+        </footer>
+      </div>
     </div>
   )
 }

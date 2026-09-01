@@ -148,6 +148,7 @@
   html {
     -webkit-tap-highlight-color: transparent;
     font-size: 16px;
+    height: 100%;
   }
 
   /* The whole scale is in rem, so one step down at phone width keeps the
@@ -164,7 +165,11 @@
     font-family: var(--font-sans);
     font-size: var(--text-body);
     line-height: 1.5;
-    overscroll-behavior-y: none;
+    /* The shell scrolls its own <main>; letting the document scroll too is what
+       makes fixed bars drift during iOS rubber-banding. */
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
     /* pixel fonts stay sharpest without subpixel smoothing */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -355,6 +360,11 @@
 }
 
 @layer utilities {
+  /* Overlay open: freeze the app scroller (the document never scrolls). */
+  .overlay-open [data-app-scroll] {
+    overflow: hidden;
+  }
+
   .tabular {
     font-variant-numeric: tabular-nums;
   }
@@ -394,6 +404,10 @@
   }
   .pt-safe {
     padding-top: env(safe-area-inset-top, 0px);
+  }
+  .px-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
   }
   .bottom-safe {
     bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tw-bottom-extra, 0px));

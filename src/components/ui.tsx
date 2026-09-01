@@ -374,8 +374,7 @@ export function Overlay({
       }
     }
     document.addEventListener('keydown', onKey)
-    const previous = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    document.documentElement.classList.add('overlay-open')
     const focusTimer = window.setTimeout(() => {
       const target = ref.current?.querySelector<HTMLElement>(
         '[data-autofocus], input, textarea, button',
@@ -384,7 +383,7 @@ export function Overlay({
     }, 20)
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = previous
+      document.documentElement.classList.remove('overlay-open')
       window.clearTimeout(focusTimer)
     }
   }, [open, onClose])
@@ -395,13 +394,13 @@ export function Overlay({
   const box = {
     // full-height side panel on a desktop, bottom sheet on a phone
     right:
-      'mt-auto max-h-[92dvh] w-full rounded-t-xl border-t sm:mt-0 sm:ml-auto sm:h-full sm:max-h-none sm:max-w-xl sm:rounded-none sm:border-t-0 sm:border-l',
+      'px-safe mt-auto max-h-[92dvh] w-full rounded-t-xl border-t sm:mt-0 sm:ml-auto sm:h-full sm:max-h-none sm:max-w-xl sm:rounded-none sm:border-t-0 sm:border-l',
     bottom:
       'mt-auto max-h-[92dvh] w-full rounded-t-xl border-t sm:m-auto sm:max-h-full sm:max-w-md sm:rounded-md sm:border sm:shadow-hard',
     center:
       'mt-auto max-h-[92dvh] w-full rounded-t-xl border-t sm:m-auto sm:max-h-full sm:max-w-lg sm:rounded-md sm:border sm:shadow-hard',
     // capture and search stay at the top, under the thumb's reach but next to the keyboard
-    top: 'mx-auto w-full max-w-2xl self-start rounded-b-xl border-b sm:mt-[9vh] sm:rounded-md sm:border sm:shadow-hard',
+    top: 'pt-safe mx-auto w-full max-w-2xl self-start rounded-b-xl border-b sm:mt-[9vh] sm:rounded-md sm:border sm:shadow-hard sm:pt-0',
   }[placement]
 
   return createPortal(

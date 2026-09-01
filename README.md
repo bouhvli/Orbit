@@ -84,8 +84,16 @@ other way round.
 - **Fingertip sizing first**: controls are 40–48px by default and tighten at
   `sm:`. Small marks (checkboxes, switches) get a 44px hit area from the `.tap`
   utility without changing how they look.
-- **Safe areas** are respected on the tab bar, the capture button and the toast
-  stack, and the type scale steps down one notch below 480px.
+- **App-shell layout.** The root is exactly one viewport tall and never
+  scrolls; the top bar and tab bar are flex children and only `<main>` scrolls.
+  Nothing is `position: fixed`, because on iOS a fixed bar drifts during
+  rubber-band scrolling and jumps when the keyboard opens. The tab bar is
+  structurally pinned instead.
+- **Safe areas**: each bar carries its own inset padding, so the *background*
+  bleeds under the notch and home indicator while the *content* stays clear.
+  Horizontal insets are handled too, for a notch in landscape. Top-anchored
+  sheets (search, capture) pad for the notch as well. The type scale steps down
+  one notch below 480px.
 - Verified in a real browser at 320px, 390px and 1440px.
 
 ### Keyboard
