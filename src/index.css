@@ -245,16 +245,12 @@
 }
 
 @layer components {
-  /*
-   * The shell is sized from a measured `--app-height` rather than a viewport
-   * unit; see lib/viewport.ts for why iOS cannot be trusted here.
-   */
   .app-shell {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: var(--app-height, 100dvh);
+    height: 100dvh;
   }
 
   .card {
@@ -452,23 +448,6 @@
     width: max(100%, 44px);
     height: max(100%, 44px);
     transform: translate(-50%, -50%);
-  }
-
-  /* `--safe-*` is measured in lib/viewport.ts: iOS reports insets it has
-     already applied to the viewport, and padding by env() alone double-counts
-     them. env() stays as the pre-JS fallback. */
-  .pb-safe {
-    padding-bottom: var(--safe-bottom, env(safe-area-inset-bottom, 0px));
-  }
-  .pt-safe {
-    padding-top: var(--safe-top, env(safe-area-inset-top, 0px));
-  }
-  .px-safe {
-    padding-left: env(safe-area-inset-left, 0px);
-    padding-right: env(safe-area-inset-right, 0px);
-  }
-  .bottom-safe {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tw-bottom-extra, 0px));
   }
 
   .track-wide {

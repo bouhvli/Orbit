@@ -71,7 +71,7 @@ function BottomTabs() {
       aria-label="Main"
       /* A flex child of the shell rather than `fixed`: on iOS a fixed bar drifts
          during rubber-band scrolling and jumps when the keyboard opens. */
-      className="pb-safe px-safe z-30 shrink-0 border-t border-line bg-canvas lg:hidden"
+      className="z-30 shrink-0 border-t border-line bg-canvas lg:hidden"
     >
       <div className="flex items-stretch">
         {TABS.map(({ to, label, icon: Icon, end }) => (
@@ -114,7 +114,7 @@ function CaptureButton() {
       aria-label="Capture anything"
       /* Anchored to the scroll area, which already ends where the tab bar
          begins — no duplicating the bar's height in a magic offset. */
-      className="absolute bottom-4 right-[calc(env(safe-area-inset-right,0px)+0.75rem)] z-30 grid h-13 w-13 place-items-center rounded-lg border-2 border-accent bg-canvas/80 text-accent backdrop-blur transition-transform active:translate-y-px lg:hidden"
+      className="absolute bottom-4 right-3 z-30 grid h-13 w-13 place-items-center rounded-lg border-2 border-accent bg-canvas/80 text-accent backdrop-blur transition-transform active:translate-y-px lg:hidden"
     >
       <IconPlus className="h-5 w-5" />
     </button>
@@ -210,7 +210,7 @@ function MobileTopBar() {
 
   return (
     <>
-      <header className="pt-safe px-safe z-30 shrink-0 border-b border-line bg-canvas lg:hidden">
+      <header className="z-30 shrink-0 border-b border-line bg-canvas lg:hidden">
         <div className="flex min-h-13 items-center gap-1 px-2">
           <span className="flex items-center gap-2 px-2 text-body uppercase tracking-[0.14em]">
             <IconOrbit className="h-4 w-4 text-accent" />
@@ -386,12 +386,12 @@ export function AppShell() {
 
   return (
     /*
-     * App-shell layout: the root is pinned and sized from the measured
-     * `--app-height`, because iOS standalone can report a viewport shorter than
-     * the real screen — that is what left a dead strip under the tab bar.
-     * The bars are flex children, so they are structurally pinned; only <main>
-     * scrolls. Safe-area insets pad each bar, so their backgrounds still bleed
-     * under the notch and home indicator while their content stays clear.
+     * App-shell layout: the root is pinned to the viewport and the bars are
+     * flex children, so they are structurally pinned; only <main> scrolls
+     * (a `position: fixed` bar drifts during iOS rubber-banding and jumps
+     * when the keyboard opens). No `viewport-fit=cover`, so iOS keeps the
+     * bars clear of the notch and home indicator on its own — no manual
+     * safe-area padding to keep in sync.
      */
     <div className="app-shell flex overflow-hidden bg-canvas">
       <aside
@@ -409,7 +409,7 @@ export function AppShell() {
           <main
             data-app-scroll
             className={cn(
-              'px-safe h-full overflow-y-auto overscroll-contain scroll-quiet',
+              'h-full overflow-y-auto overscroll-contain scroll-quiet',
               // clearance for the floating capture button
               !bare && 'pb-20 lg:pb-0',
             )}

@@ -394,13 +394,13 @@ export function Overlay({
   const box = {
     // full-height side panel on a desktop, bottom sheet on a phone
     right:
-      'px-safe mt-auto max-h-[92dvh] w-full rounded-t-xl border-t sm:mt-0 sm:ml-auto sm:h-full sm:max-h-none sm:max-w-xl sm:rounded-none sm:border-t-0 sm:border-l',
+      'mt-auto max-h-[92dvh] w-full rounded-t-xl border-t sm:mt-0 sm:ml-auto sm:h-full sm:max-h-none sm:max-w-xl sm:rounded-none sm:border-t-0 sm:border-l',
     bottom:
       'mt-auto max-h-[92dvh] w-full rounded-t-xl border-t sm:m-auto sm:max-h-full sm:max-w-md sm:rounded-md sm:border sm:shadow-hard',
     center:
       'mt-auto max-h-[92dvh] w-full rounded-t-xl border-t sm:m-auto sm:max-h-full sm:max-w-lg sm:rounded-md sm:border sm:shadow-hard',
     // capture and search stay at the top, under the thumb's reach but next to the keyboard
-    top: 'pt-safe mx-auto w-full max-w-2xl self-start rounded-b-xl border-b sm:mt-[9vh] sm:rounded-md sm:border sm:shadow-hard sm:pt-0',
+    top: 'mx-auto w-full max-w-2xl self-start rounded-b-xl border-b sm:mt-[9vh] sm:rounded-md sm:border sm:shadow-hard',
   }[placement]
 
   return createPortal(

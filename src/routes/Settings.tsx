@@ -8,7 +8,6 @@ import { useSettings } from '../db/queries'
 import { permissionState, requestNotificationPermission } from '../lib/notify'
 import { ACCENTS } from '../lib/accents'
 import { useInstall } from '../lib/pwa'
-import { viewportReport } from '../lib/viewport'
 import type { AccentKey } from '../db/types'
 import { useUI } from '../store/ui'
 
@@ -322,8 +321,6 @@ export function Settings() {
           </Row>
         </Section>
 
-        <DiagnosticsSection />
-
         <Section title="About">
           <Row title="Orbit" description="A local-first work command center. No account, no server — everything lives in this browser's storage on this device.">
             <span className="text-micro text-faint">v0.1</span>
@@ -446,59 +443,3 @@ function AccentPicker({
   )
 }
 
-/**
- * Layout bugs that only appear on someone else's phone are hard to chase, so
- * the numbers that decide the shell's geometry are readable from the device.
- */
-function DiagnosticsSection() {
-  const [report, setReport] = useState<ReturnType<typeof viewportReport> | null>(null)
-  const toast = useUI((s) => s.toast)
-
-  const lines = report
-    ? [
-        `display-mode   ${report.displayMode}${report.iosStandalone ? ' (ios standalone)' : ''}`,
-        `innerHeight    ${report.innerHeight}`,
-        `clientHeight   ${report.clientHeight}`,
-        `--app-height   ${report.appHeight}`,
-        `screen.height  ${report.screenHeight}`,
-        `viewport gap   ${report.gap}  (screen - viewport)`,
-        `dpr            ${report.dpr}`,
-        `inset reported ${report.insets.top} / ${report.insets.bottom} / ${report.insets.left} / ${report.insets.right}`,
-        `padding applied top ${report.applied.top}  bottom ${report.applied.bottom}`,
-      ]
-    : []
-
-  return (
-    <Section title="Diagnostics">
-      <Row
-        title="Display"
-        description="What this device reports for the viewport and its safe areas. Useful if the layout looks wrong here but nowhere else."
-      >
-        <Button size="sm" onClick={() => setReport(viewportReport())}>
-          {report ? 'Refresh' : 'Measure'}
-        </Button>
-      </Row>
-      {report && (
-        <div className="border-b border-line py-3 last:border-0">
-          <pre className="overflow-x-auto rounded-md border border-line bg-surface-2 p-2.5 text-micro leading-relaxed text-muted">
-            {lines.join('\n')}
-          </pre>
-          <Button
-            size="sm"
-            className="mt-2"
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(lines.join('\n'))
-                toast('Diagnostics copied')
-              } catch {
-                toast('Could not copy — read the values above')
-              }
-            }}
-          >
-            Copy
-          </Button>
-        </div>
-      )}
-    </Section>
-  )
-}

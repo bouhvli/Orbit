@@ -84,28 +84,25 @@ other way round.
 - **Fingertip sizing first**: controls are 40–48px by default and tighten at
   `sm:`. Small marks (checkboxes, switches) get a 44px hit area from the `.tap`
   utility without changing how they look.
-- **App-shell layout.** The root is pinned with `fixed inset-0` — *not* sized in
-  `dvh`, which iOS standalone can report short of the real screen and leave a
-  dead strip under the tab bar. The top bar and tab bar are flex children of
-  that root and only `<main>` scrolls, so the bars are pinned structurally
-  rather than by `position: fixed`, which drifts during iOS rubber-banding and
-  jumps when the keyboard opens.
+- **App-shell layout.** The root is pinned with `fixed inset-0`, sized to
+  `100dvh`. The top bar and tab bar are flex children of that root and only
+  `<main>` scrolls, so the bars are pinned structurally rather than by
+  `position: fixed`, which drifts during iOS rubber-banding and jumps when the
+  keyboard opens.
 - **No zoom.** The viewport is locked (`maximum-scale=1, user-scalable=no`),
   with `text-size-adjust: 100%` and `touch-action: manipulation` so iOS neither
   rescales type on rotation nor waits for a double-tap.
 - **Date and time inputs** are forced to obey their box: Safari sizes them from
   their *value*, so a `w-full` one still overflows its container on iOS until
   you give it `appearance: none; min-width: 0; max-width: 100%`.
-- **Safe areas are measured, not assumed.** iOS reports the device's
-  `env(safe-area-inset-*)` values *even when it has already shrunk the viewport
-  to avoid them* — padding by `env()` alone then counts the notch twice. So
-  `lib/viewport.ts` compares the viewport against the screen and publishes
-  `--safe-top` / `--safe-bottom` with what is genuinely still covered; `env()`
-  remains the pre-JS fallback. Each bar pads by those, so the *background*
-  bleeds under the notch and home indicator while the *content* stays clear.
-  Horizontal insets are handled too, for a notch in landscape. Top-anchored
-  sheets (search, capture) pad for the notch as well. The type scale steps down
-  one notch below 480px.
+- **No `viewport-fit=cover`.** Earlier builds bled bar backgrounds under the
+  notch and home indicator and padded the content back off them with measured
+  `env(safe-area-inset-*)` values — a real device kept disagreeing with that
+  math (a dead strip under the tab bar, content under the status bar). Without
+  `cover`, iOS never hands the page that area at all, so there is nothing to
+  measure or pad: the tab bar sits flush at the bottom and content starts clear
+  of the status bar by construction. The type scale steps down one notch below
+  480px.
 - Verified in a real browser at 320px, 390px and 1440px.
 
 ### Keyboard
@@ -180,9 +177,9 @@ Orbit is a real installable PWA, not a page with a manifest bolted on.
 - **App shortcuts** (long-press the icon): Capture, Agenda, Focus. Capture lands
   on `/?capture=1`, which opens the capture sheet and cleans the parameter out of
   the URL.
-- **iOS**: `apple-mobile-web-app-capable`, a PNG touch icon, and a translucent
-  status bar with `env(safe-area-inset-*)` respected on the top bar, tab bar,
-  capture button and toasts.
+- **iOS**: `apple-mobile-web-app-capable` and a PNG touch icon. The viewport
+  does not opt into `viewport-fit=cover`, so iOS reserves the status bar and
+  home indicator itself — see *Mobile first* above.
 - Icons are generated from `assets/icon-source.jpg` — 192/512 `any` plus 192/512
   `maskable` (artwork scaled to 72% so Android's adaptive mask cannot crop it),
   a 180px Apple touch icon and two favicons. The source JPEG's compression noise

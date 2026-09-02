@@ -75,13 +75,8 @@ export function Focus() {
   const seconds = (ms % 60_000) / 1000
 
   return (
-    // Focus has no bars of its own, so the safe-area padding lives on the root
-    // and the visual padding on the inner column — they cannot fight that way.
     <div
-      className={cn(
-        'pt-safe pb-safe px-safe flex min-h-full flex-col',
-        project ? `accent-${project.accent}` : '',
-      )}
+      className={cn('flex min-h-full flex-col', project ? `accent-${project.accent}` : '')}
     >
       <div className="flex flex-1 flex-col items-center px-5 py-6">
       <header className="flex w-full max-w-2xl items-center justify-between">
