@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Page } from '../components/AppShell'
 import { Button, Input, Segmented, Select, Switch, cn } from '../components/ui'
 import { updateNotificationPrefs, updateSettings, wipeAllData } from '../db/actions'
@@ -7,8 +7,10 @@ import { seedSampleWorkspace } from '../db/seed'
 import { useSettings } from '../db/queries'
 import { permissionState, requestNotificationPermission } from '../lib/notify'
 import { ACCENTS } from '../lib/accents'
+import { FONTS } from '../lib/fonts'
 import { useInstall } from '../lib/pwa'
 import type { AccentKey } from '../db/types'
+import type { FontKey } from '../lib/fonts'
 import { useUI } from '../store/ui'
 
 function Row({
@@ -122,17 +124,31 @@ export function Settings() {
               onChange={(accent) => void updateSettings({ accent })}
             />
           </Row>
+          <Row title="Heading font" description="Page titles and section labels.">
+            <FontPicker
+              label="Heading font"
+              sample="Aa Heading"
+              value={settings.headingFont}
+              onChange={(headingFont) => void updateSettings({ headingFont })}
+            />
+          </Row>
+          <Row title="Text font" description="Body copy across the app, including note contents.">
+            <FontPicker
+              label="Text font"
+              sample="The quick brown fox"
+              value={settings.bodyFont}
+              onChange={(bodyFont) => void updateSettings({ bodyFont })}
+            />
+          </Row>
           <Row
-            title="Reading typeface"
-            description="Departure Mono is a pixel font — lovely for the interface. If long notes read better in a system sans, switch just the note body."
+            title="Dates & numbers"
+            description="Due dates, times, counts — anywhere figures line up."
           >
-            <Segmented
-              value={settings.readingFont}
-              onChange={(readingFont) => void updateSettings({ readingFont })}
-              options={[
-                { value: 'mono', label: 'Departure' },
-                { value: 'sans', label: 'System' },
-              ]}
+            <FontPicker
+              label="Dates and numbers font"
+              sample="1,024 · 09:41 · 24 Sep"
+              value={settings.numericFont}
+              onChange={(numericFont) => void updateSettings({ numericFont })}
             />
           </Row>
         </Section>
@@ -439,6 +455,116 @@ function AccentPicker({
           </button>
         )
       })}
+    </div>
+  )
+}
+
+/**
+ * A dropdown where every option — closed or open — renders its own sample
+ * text in its own font, so choosing a font means seeing it rather than
+ * reading its name. Custom rather than a native <select>: mobile browsers
+ * render `<option>` in their own OS picker sheet and ignore per-option font
+ * styling entirely.
+ */
+function FontPicker({
+  label,
+  sample,
+  value,
+  onChange,
+}: {
+  label: string
+  sample: string
+  value: FontKey
+  onChange: (next: FontKey) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const current = FONTS.find((f) => f.key === value) ?? FONTS[0]
+
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={label}
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          'flex h-11 w-[188px] items-center justify-between gap-2 rounded-md border border-line bg-surface px-2.5 text-left transition-colors hover:border-line-strong sm:h-9',
+          open && 'border-accent',
+        )}
+      >
+        <span className="truncate text-body text-ink" style={{ fontFamily: current.stack }}>
+          {current.label}
+        </span>
+        <svg viewBox="0 0 10 10" className="h-2.5 w-2.5 shrink-0 text-faint" aria-hidden>
+          <path fill="currentColor" d="M2 4h6L5 7z" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          role="listbox"
+          aria-label={label}
+          className="animate-rise scroll-quiet absolute right-0 top-[calc(100%+4px)] z-20 max-h-72 w-64 overflow-y-auto rounded-md border border-line-strong bg-surface p-1 shadow-hard"
+        >
+          {FONTS.map((f) => {
+            const selected = f.key === value
+            return (
+              <button
+                key={f.key}
+                type="button"
+                role="option"
+                aria-selected={selected}
+                onClick={() => {
+                  onChange(f.key)
+                  setOpen(false)
+                }}
+                className={cn(
+                  'flex w-full flex-col gap-0.5 rounded-sm px-2.5 py-2 text-left transition-colors',
+                  selected ? 'bg-accent-soft' : 'hover:bg-surface-2',
+                )}
+              >
+                <span className="flex items-center justify-between gap-2">
+                  <span
+                    className={cn('truncate text-body leading-tight', selected ? 'text-accent-ink' : 'text-ink')}
+                    style={{ fontFamily: f.stack }}
+                  >
+                    {sample}
+                  </span>
+                  {selected && (
+                    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0 text-accent-ink" aria-hidden>
+                      <path
+                        d="M3 8.5 6.3 11.5 13 4.8"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="square"
+                      />
+                    </svg>
+                  )}
+                </span>
+                <span className="text-micro text-faint">{f.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

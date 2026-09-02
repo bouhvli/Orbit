@@ -97,7 +97,7 @@ function Editor({ note }: { note: Note }) {
             {...draftProps(body)}
             placeholder={'# Heading\n\nMarkdown works here.\n\n- a list\n- another item'}
             className="h-full min-h-[50vh] w-full resize-none bg-transparent px-4 py-4 text-body leading-relaxed outline-none placeholder:text-faint"
-            style={{ fontFamily: 'var(--font-read)' }}
+            style={{ fontFamily: 'var(--font-body)' }}
           />
         ) : (
           <div

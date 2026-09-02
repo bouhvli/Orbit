@@ -43,8 +43,10 @@
   --accent-ink: #3d37ab;
   --accent-soft: #e9e8fd;
 
-  /* long-form reading face — swappable in Settings */
-  --font-read: 'Departure Mono', ui-monospace, monospace;
+  /* swappable in Settings → Appearance; catalog lives in src/lib/fonts.ts */
+  --font-heading: 'Departure Mono', ui-monospace, monospace;
+  --font-body: 'Departure Mono', ui-monospace, monospace;
+  --font-numeric: 'Departure Mono', ui-monospace, monospace;
 
   color-scheme: light;
 }
@@ -115,9 +117,11 @@
   --color-bad: var(--c-bad);
   --color-bad-soft: var(--c-bad-soft);
 
-  --font-sans: 'Departure Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-sans: var(--font-body);
   --font-mono: 'Departure Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  --font-read: var(--font-read);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+  --font-numeric: var(--font-numeric);
 
   /* Pixel grid: 11px = 1 font pixel. Every step is a multiple of 5.5px. */
   --text-micro: 0.6875rem; /* 11 */
@@ -186,6 +190,15 @@
   #root {
     height: 100%;
     display: contents;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
   }
 
   ::selection {
@@ -288,7 +301,7 @@
 
   /* Rendered markdown — the notes surface */
   .prose-note {
-    font-family: var(--font-read);
+    font-family: var(--font-body);
     color: var(--c-text);
     line-height: 1.65;
     font-size: var(--text-body);
@@ -418,6 +431,7 @@
 
   .tabular {
     font-variant-numeric: tabular-nums;
+    font-family: var(--font-numeric);
   }
 
   /* Row actions: always visible on touch, revealed on hover with a pointer.

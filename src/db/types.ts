@@ -1,3 +1,5 @@
+import type { FontKey } from '../lib/fonts'
+
 export type ID = string
 
 export type ProjectStatus = 'active' | 'on-hold' | 'done'
@@ -137,8 +139,12 @@ export interface Settings {
   theme: 'light' | 'dark' | 'system'
   /** The app's own accent. Projects keep their own on top of it. */
   accent: AccentKey
-  /** Long-form reading face: the pixel mono, or the system sans. */
-  readingFont: 'mono' | 'sans'
+  /** Headings — page titles, section labels. */
+  headingFont: FontKey
+  /** Body copy across the app, including note contents. */
+  bodyFont: FontKey
+  /** Anywhere figures line up: due dates, times, counts. */
+  numericFont: FontKey
   /** Day the app was last opened, ISO date — powers the open streak. */
   lastOpened: string | null
   openStreak: number

@@ -8,7 +8,11 @@ import type { Health, ID, Meeting, Note, Project, Task } from './types'
 const EMPTY: never[] = []
 
 export function useSettings() {
-  return useLiveQuery(() => db.settings.get('app'), [], DEFAULT_SETTINGS) ?? DEFAULT_SETTINGS
+  // Merged with defaults so a settings row saved before a new preference
+  // existed (e.g. an older Settings shape already on someone's device)
+  // still has every field the UI expects.
+  const stored = useLiveQuery(() => db.settings.get('app'), [], DEFAULT_SETTINGS)
+  return { ...DEFAULT_SETTINGS, ...stored }
 }
 
 export function useProjects(includeArchived = false) {

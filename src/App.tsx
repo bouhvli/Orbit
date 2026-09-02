@@ -9,6 +9,7 @@ import { TaskSheet } from './components/TaskSheet'
 import { Toaster } from './components/Toaster'
 import { touchOpenStreak } from './db/actions'
 import { useSettings } from './db/queries'
+import { FONT_MAP } from './lib/fonts'
 import { startNotificationLoop } from './lib/notify'
 import { initServiceWorker, reloadWithUpdate } from './lib/pwa'
 import { useUI } from './store/ui'
@@ -22,10 +23,8 @@ import { Settings } from './routes/Settings'
 import { Tasks } from './routes/Tasks'
 import { Today } from './routes/Today'
 
-const SANS = "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
-
 function useTheme() {
-  const { theme, readingFont, accent } = useSettings()
+  const { theme, headingFont, bodyFont, numericFont, accent } = useSettings()
 
   useEffect(() => {
     const root = document.documentElement
@@ -50,11 +49,11 @@ function useTheme() {
   }, [theme])
 
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      '--font-read',
-      readingFont === 'sans' ? SANS : "'Departure Mono', ui-monospace, monospace",
-    )
-  }, [readingFont])
+    const root = document.documentElement.style
+    root.setProperty('--font-heading', FONT_MAP[headingFont].stack)
+    root.setProperty('--font-body', FONT_MAP[bodyFont].stack)
+    root.setProperty('--font-numeric', FONT_MAP[numericFont].stack)
+  }, [headingFont, bodyFont, numericFont])
 
   // The accent class lives on <body>, not <html>: the dark overrides are written
   // as `.dark .accent-x`, so they need `.dark` on an *ancestor* to match.
