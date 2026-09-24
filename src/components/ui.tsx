@@ -364,13 +364,17 @@ export function Overlay({
   labelledBy?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
+  // Callers often pass an inline onClose; keeping it in a ref stops the effect
+  // below from re-running (and re-stealing focus) on every parent render.
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
 
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.stopPropagation()
-        onClose()
+        onCloseRef.current()
       }
     }
     document.addEventListener('keydown', onKey)
@@ -386,7 +390,7 @@ export function Overlay({
       document.documentElement.classList.remove('overlay-open')
       window.clearTimeout(focusTimer)
     }
-  }, [open, onClose])
+  }, [open])
 
   if (!open) return null
 
